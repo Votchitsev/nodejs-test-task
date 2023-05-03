@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
 const User = require('../models/user');
+const auth = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -88,6 +89,17 @@ router.post('/login', async (req, res) => {
     }
 
     return res.status(400).send('Invalid credentials');
+  } catch (error) {
+    return res.status(500).send(error);
+  }
+});
+
+router.post('/logout', auth, async (req, res) => {
+  try {
+    req.user.token = null;
+    await req.user.save();
+
+    return res.status(200).send('User logout');
   } catch (error) {
     return res.status(500).send(error);
   }
