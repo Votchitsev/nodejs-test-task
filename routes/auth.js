@@ -55,4 +55,42 @@ router.post('/register', async (req, res) => {
   }
 });
 
+router.post('/login', async (req, res) => {
+  try {
+    const {
+      email,
+      password,
+    } = req.body;
+
+    if (!(email && password)) {
+      return res.status(400).send('Email and password are required');
+    }
+
+    const user = await User.findOne({
+      where: {
+        email: {
+          [Op.eq]: email,
+        },
+      },
+    });
+
+    if (user && await bcrypt.compare(password, user.password)) {
+      const token = jwt.sign(
+        { user_id: user.id, email },
+        process.env.APP_TOKEN,
+        { expiresIn: '2h' },
+      );
+
+      user.token = token;
+      user.save();
+
+      return res.status(200).json(user);
+    }
+
+    return res.status(400).send('Invalid credentials');
+  } catch (error) {
+    return res.status(500).send(error);
+  }
+});
+
 module.exports = router;
