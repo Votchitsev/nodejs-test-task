@@ -73,7 +73,9 @@ router.put('/update', auth, async (req, res) => {
       return res.status(401).send('The post not found');
     }
 
-    post.message = message;
+    if (message) {
+      post.message = message;
+    }
 
     if (prevFileId && newFileId) {
       const prevFile = await File.findByPk(prevFileId);
