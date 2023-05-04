@@ -21,4 +21,19 @@ router.post('/create', auth, async (req, res) => {
   }
 });
 
+router.get('/list', async (req, res) => {
+  try {
+    const { page } = req.query;
+
+    const postList = await Post.findAndCountAll({
+      limit: 20,
+      offset: (page - 1) * 20,
+    });
+
+    return res.status(200).json(postList);
+  } catch (error) {
+    return res.status(500).send(error);
+  }
+});
+
 module.exports = router;
