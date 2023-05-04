@@ -51,7 +51,12 @@ router.get('/list', async (req, res) => {
 
 router.put('/update', auth, async (req, res) => {
   try {
-    const { postId, message } = req.body;
+    const {
+      postId,
+      message,
+      prevFileId,
+      newFileId,
+    } = req.body;
 
     const post = await Post.findOne({
       where: {
@@ -69,6 +74,21 @@ router.put('/update', auth, async (req, res) => {
     }
 
     post.message = message;
+
+    if (prevFileId && newFileId) {
+      const prevFile = await File.findByPk(prevFileId);
+      const newFile = await File.findByPk(newFileId);
+
+      await prevFile.destroy();
+
+      newFile.PostId = post.id;
+      newFile.save();
+
+      fs.unlink(prevFile.path, (err) => {
+        if (err) throw new Error(err);
+      });
+    }
+
     await post.save();
 
     return res.status(201).json(post);
