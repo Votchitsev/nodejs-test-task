@@ -1,6 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../database');
 const User = require('./user');
+const File = require('./file');
 
 const Post = sequelize.define('Post', {
   message: {
@@ -12,6 +13,7 @@ const Post = sequelize.define('Post', {
 Post.belongsTo(User);
 User.hasMany(Post);
 
-sequelize.sync({ force: true });
+File.belongsTo(Post);
+Post.hasMany(File);
 
 module.exports = Post;

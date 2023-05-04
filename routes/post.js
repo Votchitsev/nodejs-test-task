@@ -1,13 +1,15 @@
 const express = require('express');
 const { Op } = require('sequelize');
+const fs = require('fs');
 const auth = require('../middleware/auth');
 const Post = require('../models/post');
+const File = require('../models/file');
 
 const router = express.Router();
 
 router.post('/create', auth, async (req, res) => {
   try {
-    const { message } = req.body;
+    const { message, fileId } = req.body;
 
     const post = await Post.create({
       message,
@@ -15,6 +17,13 @@ router.post('/create', auth, async (req, res) => {
     });
 
     await post.save();
+
+    if (fileId) {
+      const file = await File.findByPk(fileId);
+
+      file.PostId = post.id;
+      await file.save();
+    }
 
     return res.status(201).json(post);
   } catch (error) {
@@ -29,6 +38,9 @@ router.get('/list', async (req, res) => {
     const postList = await Post.findAndCountAll({
       limit: 20,
       offset: (page - 1) * 20,
+      include: [{
+        model: File,
+      }],
     });
 
     return res.status(200).json(postList);
@@ -82,6 +94,25 @@ router.delete('/delete', auth, async (req, res) => {
 
     if (!post) {
       return res.status(401).send('The post not found');
+    }
+
+    const files = await File.findAll({
+      where: {
+        PostId: {
+          [Op.eq]: postId,
+        },
+      },
+    });
+
+    if (files) {
+      files.forEach(
+        (file) => {
+          file.destroy();
+          fs.unlink(file.path, (err) => {
+            if (err) throw new Error(err);
+          });
+        },
+      );
     }
 
     await post.destroy();
