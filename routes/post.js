@@ -1,4 +1,5 @@
 const express = require('express');
+const { Op } = require('sequelize');
 const auth = require('../middleware/auth');
 const Post = require('../models/post');
 
@@ -31,6 +32,34 @@ router.get('/list', async (req, res) => {
     });
 
     return res.status(200).json(postList);
+  } catch (error) {
+    return res.status(500).send(error);
+  }
+});
+
+router.put('/update', auth, async (req, res) => {
+  try {
+    const { postId, message } = req.body;
+
+    const post = await Post.findOne({
+      where: {
+        id: {
+          [Op.eq]: postId,
+        },
+        UserId: {
+          [Op.eq]: req.user.id,
+        },
+      },
+    });
+
+    if (!post) {
+      return res.status(401).send('The post not found');
+    }
+
+    post.message = message;
+    await post.save();
+
+    return res.status(201).json(post);
   } catch (error) {
     return res.status(500).send(error);
   }
