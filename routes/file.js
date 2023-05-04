@@ -3,7 +3,6 @@ const express = require('express');
 const path = require('path');
 const File = require('../models/file');
 const auth = require('../middleware/auth');
-const checkFileSize = require('../middleware/checkFileSize');
 const fileFilter = require('../utils/fileFilter');
 
 const router = express.Router();
@@ -21,7 +20,6 @@ router.post(
   '/upload',
   multer({ storage, fileFilter }).single('file'),
   auth,
-  checkFileSize,
   async (req, res) => {
     try {
       if (!req.file) {

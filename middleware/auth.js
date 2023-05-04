@@ -3,7 +3,7 @@ const { Op } = require('sequelize');
 const User = require('../models/user');
 
 const verifyToken = async (req, res, next) => {
-  const token = req.headers['x-access-token'];
+  const token = req.headers['access-token'];
 
   if (!token) {
     return res.status(403).send('Token has not provided');

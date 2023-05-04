@@ -50,7 +50,13 @@ router.post('/register', async (req, res) => {
     user.token = token;
     user.save();
 
-    return res.status(201).json(user);
+    return res.status(201).json({
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      token: user.token,
+    });
   } catch (error) {
     return res.status(500).send(error);
   }
@@ -85,7 +91,13 @@ router.post('/login', async (req, res) => {
       user.token = token;
       user.save();
 
-      return res.status(200).json(user);
+      return res.status(200).json({
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        token: user.token,
+      });
     }
 
     return res.status(400).send('Invalid credentials');
