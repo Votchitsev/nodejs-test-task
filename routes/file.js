@@ -1,7 +1,9 @@
 const multer = require('multer');
 const express = require('express');
+const path = require('path');
 const File = require('../models/file');
 const auth = require('../middleware/auth');
+const fileFilter = require('../utils/fileFilter');
 
 const router = express.Router();
 
@@ -16,15 +18,19 @@ const storage = multer.diskStorage({
 
 router.post(
   '/upload',
-  multer({ storage, limits: { fileSize: 3145728 } }).single('file'),
+  multer({ storage, limits: { fileSize: 10485760 }, fileFilter }).single('file'),
   auth,
   async (req, res) => {
     try {
-      const path = `${req.file.destination}/${req.file.filename}`;
+      if (!req.file) {
+        return res.status(400).send('bad request');
+      }
+
+      const filePath = `${req.file.destination}/${req.file.filename}`;
 
       const file = await File.create({
         name: req.file.filename,
-        path,
+        path: filePath,
       });
 
       await file.save();
@@ -35,5 +41,20 @@ router.post(
     }
   },
 );
+
+router.get('/download', async (req, res) => {
+  try {
+    const { id } = req.body;
+    const file = await File.findByPk(id);
+
+    if (!file) {
+      return res.status(401).send('File not found');
+    }
+
+    return res.sendFile(path.join(__dirname, '../', file.path));
+  } catch (error) {
+    return res.send(500).send(error);
+  }
+});
 
 module.exports = router;
