@@ -65,4 +65,31 @@ router.put('/update', auth, async (req, res) => {
   }
 });
 
+router.delete('/delete', auth, async (req, res) => {
+  try {
+    const { postId } = req.body;
+
+    const post = await Post.findOne({
+      where: {
+        id: {
+          [Op.eq]: postId,
+        },
+        UserId: {
+          [Op.eq]: req.user.id,
+        },
+      },
+    });
+
+    if (!post) {
+      return res.status(401).send('The post not found');
+    }
+
+    await post.destroy();
+
+    return res.status(200).send('Removed');
+  } catch (error) {
+    return res.status(500).send(error);
+  }
+});
+
 module.exports = router;
