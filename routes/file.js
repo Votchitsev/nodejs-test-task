@@ -1,25 +1,15 @@
-const multer = require('multer');
 const express = require('express');
 const path = require('path');
 const File = require('../models/file');
 const auth = require('../middleware/auth');
-const fileFilter = require('../utils/fileFilter');
+const uploadFile = require('../middleware/uploadFile');
 
 const router = express.Router();
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'upload');
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}_${file.originalname}`);
-  },
-});
-
 router.post(
   '/upload',
-  multer({ storage, fileFilter }).single('file'),
   auth,
+  uploadFile,
   async (req, res) => {
     try {
       if (!req.file) {
