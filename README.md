@@ -1,4 +1,4 @@
-# Тествое задание для разработчика Node.js
+# Тестовое задание для разработчика Node.js
 
 > Необходимо разработать API для блога на Node.js
 
@@ -38,6 +38,16 @@
 
 ## Решение
 
+### Описание
+
+Приложение представляет собой API-сервис для создания блога. В нём реализованы функции регистрации и авторизации пользователя, создания постов, которые могут включать текст и медиафайлы
+(изображения, аудио, видео). Информация по работе с запросами приведена ниже.
+
+> Используемые технологии: Node.js, Express.js, PostgreSQL
+
+> Сервер запущен на http://80.78.240.158
+
+
 ### Документация к конечным точкам
 
 #### Регистрация пользователя 
@@ -50,6 +60,7 @@
     method: 'POST',
     headers: {
         'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
     },
     body: {
         email: string,
@@ -80,6 +91,7 @@
     method: 'POST',
     headers: {
         'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
     },
     body: {
         email: string,
@@ -108,6 +120,7 @@
     method: 'POST',
     headers: {
         'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
         'access-token': string,
     },
 }
@@ -129,6 +142,7 @@ User logout
     method: 'POST',
     headers: {
         'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
         'access-token: string,
     },
     body: {
@@ -160,6 +174,7 @@ User logout
     method: 'PUT',
     headers: {
         'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
         'access-token: string,
     },
     body: {
@@ -233,6 +248,8 @@ User logout
     method: 'DELETE',
     headers: {
         'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'access-token: string,
     },
     body: {
         postId: number,
@@ -258,6 +275,7 @@ Removed
     method: 'POST',
     headers: {
         'Content-Type': 'multipart/form-data',
+        'Access-Control-Allow-Origin': '*',
         'access-token': string,
     },
     body: {
