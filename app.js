@@ -8,6 +8,8 @@ const file = require('./routes/file');
 
 const app = express();
 
+app.use(express.json());
+
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -17,8 +19,6 @@ app.use(cors({
 app.use('/auth', auth);
 app.use('/post', post);
 app.use('/file', file);
-
-app.use(express.json());
 
 app.get('/', async (req, res) => {
   res.sendFile(path.join(__dirname, 'templates/about.html'));
